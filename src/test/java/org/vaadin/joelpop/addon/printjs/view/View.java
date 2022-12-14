@@ -1,8 +1,10 @@
 package org.vaadin.joelpop.addon.printjs.view;
 
-import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -16,140 +18,117 @@ import java.util.function.Predicate;
 public class View extends Composite<VerticalLayout> {
 
     public static final String VIEW_ID = "view";
+    public static final String PDF_URL = "PDF";
+    public static final String HTML_ELEMENT = "HTML_ELEMENT";
+    public static final String IMAGE_URL = "IMAGE";
+    public static final String JSON_DATA = "JSON";
+    public static final String RAW_HTML = "RAW_HTML";
 
-    public static final String PDF_FILE_NAME_TEXT_FIELD_ID = "pdf-file-name-id";
-    public static final String HTML_ELEMENT_TEXT_FIELD_ID = "html-element-id";
-    public static final String IMAGE_FILE_NAME_TEXT_FIELD_ID = "image-file-name-id";
-    public static final String JSON_TEXT_FIELD_ID = "json-id";
-    public static final String RAW_HTML_TEXT_FIELD_ID = "raw-html-id";
-
-    public static final String PRINT_PDF_FILE_NAME_BUTTON_ID = "print-pdf-file-name-id";
-    public static final String PRINT_HTML_ELEMENT_BUTTON_ID = "print-html-element-id";
-    public static final String PRINT_IMAGE_FILE_NAME_BUTTON_ID = "print-image-file-name-id";
-    public static final String PRINT_JSON_BUTTON_ID = "print-json-id";
-    public static final String PRINT_RAW_HTML_BUTTON_ID = "print-raw-html-id";
-
-    public static final String DEFAULT_PDF_FILE_NAME = "doc/default.pdf";
+    public static final String DEFAULT_PDF_URL = "doc/default.pdf";
+    public static final String DEFAULT_IMAGE_URL = "doc/default.png";
     public static final String DEFAULT_HTML_ELEMENT = VIEW_ID;
-    public static final String DEFAULT_IMAGE_FILE_NAME = "doc/default.png";
-    public static final String DEFAULT_JSON = "{}";
-    public static final String DEFAULT_RAW_HTML = "<div>Default Raw HTML</div>";
-
-    private final TextField pdfFileNameTextField;
-    private final TextField htmlElementTextField;
-    private final TextField imageFileNameTextField;
-    private final TextField jsonTextField;
-    private final TextField rawHtmlTextField;
-
-    private final PrintJs printJs;
+    public static final String DEFAULT_RAW_HTML = "<div>Default Raw HTML: <em>Hello, World!</em></div>";
+    public static final String DEFAULT_JSON = "[" +
+            "{name:'John Doe', email:'john@doe.com', phone:'111-111-1111'}, " +
+            "{name:'Barry Allen', email:'barry@flash.com', phone:'222-222-2222'}, " +
+            "{name:'Cool Dude', email:'cool@dude.com', phone:'333-333-3333'} ]";
 
     public View() {
         setId(VIEW_ID);
 
-        // pdf
-        pdfFileNameTextField = new TextField("Name of PDF File on Server");
-        pdfFileNameTextField.setId(PDF_FILE_NAME_TEXT_FIELD_ID);
-        pdfFileNameTextField.setPlaceholder("Default: " + DEFAULT_PDF_FILE_NAME);
-
-        var printPdfFileNameButton = new Button("Print PDF from file on server");
-        printPdfFileNameButton.setId(PRINT_PDF_FILE_NAME_BUTTON_ID);
-        printPdfFileNameButton.addClickListener(this::onPrintPdfClick);
+        // pdf file
+        var pdfPrintOption = createPrintOptionComponent(PDF_URL,
+                "Name of PDF File on Server", DEFAULT_PDF_URL);
 
         // html element
-        htmlElementTextField = new TextField("Element ID of HTML");
-        htmlElementTextField.setId(HTML_ELEMENT_TEXT_FIELD_ID);
-        htmlElementTextField.setPlaceholder("Default: " + DEFAULT_HTML_ELEMENT);
-
-        var printHtmlElementButton = new Button("Print HTML from element ID");
-        printHtmlElementButton.setId(PRINT_HTML_ELEMENT_BUTTON_ID);
-        printHtmlElementButton.addClickListener(this::onPrintHtmlElementClick);
+        var htmlPrintOption = createPrintOptionComponent(HTML_ELEMENT,
+                "Element ID of HTML", DEFAULT_HTML_ELEMENT);
 
         // image
-        imageFileNameTextField = new TextField("Name of Image File on Server");
-        imageFileNameTextField.setId(IMAGE_FILE_NAME_TEXT_FIELD_ID);
-        imageFileNameTextField.setPlaceholder("Default: " + DEFAULT_IMAGE_FILE_NAME);
-
-        var printImageFileNameButton = new Button("Print Image from file on server");
-        printImageFileNameButton.setId(PRINT_IMAGE_FILE_NAME_BUTTON_ID);
-        printImageFileNameButton.addClickListener(this::onPrintImageClick);
+        var imagePrintOption = createPrintOptionComponent(IMAGE_URL,
+                "Name of Image File on Server", DEFAULT_IMAGE_URL);
 
         // json
-        jsonTextField = new TextField("JSON data");
-        jsonTextField.setId(JSON_TEXT_FIELD_ID);
-        jsonTextField.setPlaceholder("Default: " + DEFAULT_JSON);
-
-        var printJsonButton = new Button("Print JSON data");
-        printJsonButton.setId(PRINT_JSON_BUTTON_ID);
-        printJsonButton.addClickListener(this::onPrintJsonClick);
+        var jsonPrintOption = createPrintOptionComponent(JSON_DATA,
+                "JSON data", DEFAULT_JSON);
 
         // raw html
-        rawHtmlTextField = new TextField("Raw HTML");
-        rawHtmlTextField.setId(RAW_HTML_TEXT_FIELD_ID);
-        rawHtmlTextField.setPlaceholder("Default: " + DEFAULT_RAW_HTML);
-
-        var printRawHtmlButton = new Button("Print Raw HTML");
-        printRawHtmlButton.setId(PRINT_RAW_HTML_BUTTON_ID);
-        printRawHtmlButton.addClickListener(this::onPrintRawHtmlClick);
+        var rawHtmlPrintOption = createPrintOptionComponent(RAW_HTML,
+                "Raw HTML", DEFAULT_RAW_HTML);
 
         // content
         var content = getContent();
-        content.add(new HorizontalLayout(pdfFileNameTextField, printPdfFileNameButton));
-        content.add(new HorizontalLayout(htmlElementTextField, printHtmlElementButton));
-        content.add(new HorizontalLayout(imageFileNameTextField, printImageFileNameButton));
-        content.add(new HorizontalLayout(jsonTextField, printJsonButton));
-        content.add(new HorizontalLayout(rawHtmlTextField, printRawHtmlButton));
-
-        printJs = new PrintJs();
+        content.add(pdfPrintOption);
+        content.add(htmlPrintOption);
+        content.add(imagePrintOption);
+        content.add(jsonPrintOption);
+        content.add(rawHtmlPrintOption);
     }
 
-    private void onPrintPdfClick(ClickEvent<Button> buttonClickEvent) {
-        printJs.reset();
-        printJs.setPrintableType(PrintJs.PrintableType.PDF);
-        var value = Optional.ofNullable(pdfFileNameTextField.getValue())
+    private Component createPrintOptionComponent(String printableTypeName,
+                                                 String label, String defaultPrintable) {
+        var printableTextField = new TextField(label);
+        printableTextField.setId(textFieldIdFor(printableTypeName));
+        printableTextField.setPlaceholder(defaultPrintable);
+        printableTextField.setWidth(25, Unit.EM);
+
+        var printButton = new Button("Print");
+        printButton.setId(buttonIdFor(printableTypeName));
+        printButton.addClickListener(e -> onPrintClick(printableTypeName,
+                printableTextField.getValue(), defaultPrintable));
+
+        var layout = new HorizontalLayout();
+        layout.setAlignItems(FlexComponent.Alignment.BASELINE);
+        layout.add(printableTextField);
+        layout.add(printButton);
+
+        return layout;
+    }
+
+    private void onPrintClick(String printableTypeName,
+                              String printable, String defaultPrintable) {
+        var value = Optional.ofNullable(printable)
                 .filter(Predicate.not(String::isBlank))
-                .orElse(DEFAULT_PDF_FILE_NAME);
-        printJs.setPrintable(value);
+                .orElse(defaultPrintable);
+//        var printJs = switch (printableTypeName) {
+//            case "PDF" -> PrintJs.fromPdfUrl(value);
+//            case "IMAGE" -> PrintJs.fromImageUrl(value);
+//            case "HTML_ELEMENT" -> PrintJs.fromHtmlElement(value);
+//            case "RAW_HTML" -> PrintJs.fromRawHtml(value);
+//            case "JSON" -> PrintJs.fromJsonData(value);
+//        };
+        PrintJs printJs;
+        switch (printableTypeName) {
+            case PDF_URL:
+                printJs = PrintJs.fromPdfUrl(value);
+                break;
+            case IMAGE_URL:
+                printJs = PrintJs.fromImageUrl(value);
+                break;
+            case HTML_ELEMENT:
+                printJs = PrintJs.fromHtmlElement(value);
+                break;
+            case RAW_HTML:
+                printJs = PrintJs.fromRawHtml(value);
+                break;
+            case JSON_DATA:
+                printJs = PrintJs.fromJsonData(value);
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+
         getUI().ifPresent(printJs::print);
     }
 
-    private void onPrintHtmlElementClick(ClickEvent<Button> buttonClickEvent) {
-        printJs.reset();
-        printJs.setPrintableType(PrintJs.PrintableType.HTML);
-        var value = Optional.ofNullable(htmlElementTextField.getValue())
-                .filter(Predicate.not(String::isBlank))
-                .orElse(DEFAULT_HTML_ELEMENT);
-        printJs.setPrintable(value);
-        getUI().ifPresent(printJs::print);
+    public static String textFieldIdFor(String printableTypeName) {
+        var idPrefix = printableTypeName.toLowerCase().replace('_', '-');
+        return idPrefix + "-text-field";
     }
 
-    private void onPrintImageClick(ClickEvent<Button> buttonClickEvent) {
-        printJs.reset();
-        printJs.setPrintableType(PrintJs.PrintableType.IMAGE);
-        var value = Optional.ofNullable(imageFileNameTextField.getValue())
-                .filter(Predicate.not(String::isBlank))
-                .orElse(DEFAULT_IMAGE_FILE_NAME);
-        printJs.setPrintable(value);
-        getUI().ifPresent(printJs::print);
-    }
-
-    private void onPrintJsonClick(ClickEvent<Button> buttonClickEvent) {
-        printJs.reset();
-        printJs.setPrintableType(PrintJs.PrintableType.JSON);
-        var value = Optional.ofNullable(jsonTextField.getValue())
-                .filter(Predicate.not(String::isBlank))
-                .orElse(DEFAULT_JSON);
-        printJs.setPrintable(value);
-        getUI().ifPresent(printJs::print);
-    }
-
-    private void onPrintRawHtmlClick(ClickEvent<Button> buttonClickEvent) {
-        printJs.reset();
-        printJs.setPrintableType(PrintJs.PrintableType.RAW_HTML);
-        var value = Optional.ofNullable(rawHtmlTextField.getValue())
-                .filter(Predicate.not(String::isBlank))
-                .orElse(DEFAULT_RAW_HTML);
-        printJs.setPrintable(value);
-        getUI().ifPresent(printJs::print);
+    public static String buttonIdFor(String printableTypeName) {
+        var idPrefix = printableTypeName.toLowerCase().replace('_', '-');
+        return idPrefix + "-button";
     }
 
 }

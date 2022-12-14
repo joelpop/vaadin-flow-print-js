@@ -22,7 +22,7 @@
     </licenses>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>11</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -136,11 +136,11 @@
             <artifactId>vaadin-core</artifactId>
             <scope>test</scope>
         </dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
@@ -158,8 +158,17 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <!-- transitive dependency to override vulnerability in 1.64 from io.github.bonigarcia:webdrivermanager:5.3.1 -->
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.70</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
+            <!-- hard-coded dependency to override vulnerability in 7.6.1 -->
+            <version>[6.11]</version>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -15,3 +15,5 @@ drivers/
 error-screenshots/
 webpack.generated.js
 frontend/generated/
+
+src/main/resources/rebel.xml
