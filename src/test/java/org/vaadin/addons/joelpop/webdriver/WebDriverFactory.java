@@ -1,4 +1,4 @@
-package org.vaadin.joelpop.webdriver;
+package org.vaadin.addons.joelpop.webdriver;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.github.bonigarcia.wdm.config.DriverManagerType;

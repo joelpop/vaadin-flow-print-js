@@ -1,8 +1,8 @@
-package org.vaadin.joelpop.addon.printjs.test;
+package org.vaadin.addons.joelpop.printjs.test;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.vaadin.joelpop.addon.printjs.PrintJs;
+import org.vaadin.addons.joelpop.printjs.PrintJs;
 
 import java.util.function.Supplier;
 

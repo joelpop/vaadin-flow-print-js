@@ -1,18 +1,18 @@
-package org.vaadin.joelpop.addon.printjs.test;
+package org.vaadin.addons.joelpop.printjs.test;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.vaadin.joelpop.addon.printjs.PrintJs;
+import org.vaadin.addons.joelpop.printjs.PrintJs;
 
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
-public class RawHtmlTest {
-    public static final String PRINTABLE = "<div class=\"raw\">Hello, <span style=\"font-weight:500;\">World</span>!</div>";
-    public static final String PRINTABLE_TYPE = "raw-html";
-    public static final Supplier<PrintJs> INSTANTIATOR = () -> PrintJs.fromRawHtml(PRINTABLE);
+public class HtmlElementTest {
+    public static final String PRINTABLE = "htmlElementId";
+    public static final String PRINTABLE_TYPE = "html";
+    public static final Supplier<PrintJs> INSTANTIATOR = () -> PrintJs.fromHtmlElement(PRINTABLE);
 
     private PrintJs printJs;
 
@@ -24,7 +24,7 @@ public class RawHtmlTest {
     @Test
     public void checkInstantiation() {
         assertThat(printJs)
-                .as("printable for raw HTML and its printable type")
+                .as("printable for HTML element and its printable type")
                 .hasToString(ParameterBuilder.create()
                         .addWithQuotes("printable", PRINTABLE)
                         .addWithQuotes("type", PRINTABLE_TYPE)
@@ -36,7 +36,7 @@ public class RawHtmlTest {
         printJs.reset();
 
         assertThat(printJs)
-                .as("printable for raw HTML and its printable type")
+                .as("printable for HTML element and its printable type")
                 .hasToString(ParameterBuilder.create()
                         .addWithQuotes("printable", PRINTABLE)
                         .addWithQuotes("type", PRINTABLE_TYPE)
@@ -59,7 +59,7 @@ public class RawHtmlTest {
                 .reset();
 
         assertThat(printJs)
-                .as("printable for raw HTML and its printable type")
+                .as("printable for HTML element and its printable type")
                 .hasToString(ParameterBuilder.create()
                         .addWithQuotes("printable", PRINTABLE)
                         .addWithQuotes("type", PRINTABLE_TYPE)

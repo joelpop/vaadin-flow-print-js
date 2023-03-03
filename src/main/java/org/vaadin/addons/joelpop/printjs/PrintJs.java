@@ -1,4 +1,4 @@
-package org.vaadin.joelpop.addon.printjs;
+package org.vaadin.addons.joelpop.printjs;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static org.vaadin.joelpop.addon.printjs.PrintJs.Parameter.*;
+import static org.vaadin.addons.joelpop.printjs.PrintJs.Parameter.*;
 
 /**
  * A Java wrapper for Print.js to set its parameters and print.

@@ -1,4 +1,4 @@
-package org.vaadin.joelpop.addon.printjs.view;
+package org.vaadin.addons.joelpop.printjs.view;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
@@ -9,7 +9,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
-import org.vaadin.joelpop.addon.printjs.PrintJs;
+import org.vaadin.addons.joelpop.printjs.PrintJs;
 
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -29,9 +29,10 @@ public class View extends Composite<VerticalLayout> {
     public static final String DEFAULT_HTML_ELEMENT = VIEW_ID;
     public static final String DEFAULT_RAW_HTML = "<div>Default Raw HTML: <em>Hello, World!</em></div>";
     public static final String DEFAULT_JSON = "[" +
-            "{name:'John Doe', email:'john@doe.com', phone:'111-111-1111'}, " +
-            "{name:'Barry Allen', email:'barry@flash.com', phone:'222-222-2222'}, " +
-            "{name:'Cool Dude', email:'cool@dude.com', phone:'333-333-3333'} ]";
+            "{name:'John Doe',email:'john@doe.com',phone:'111-111-1111'}," +
+            "{name:'Barry Allen',email:'barry@flash.com',phone:'222-222-2222'}," +
+            "{name:'Cool Dude',email:'cool@dude.com',phone:'333-333-3333'}]";
+    public static final String[] DEFAULT_JSON_PROPERTIES = { "name", "phone" };
 
     public View() {
         setId(VIEW_ID);
@@ -113,6 +114,7 @@ public class View extends Composite<VerticalLayout> {
                 break;
             case JSON_DATA:
                 printJs = PrintJs.fromJsonData(value);
+                printJs.setJsonProperties(DEFAULT_JSON_PROPERTIES);
                 break;
             default:
                 throw new IllegalArgumentException();

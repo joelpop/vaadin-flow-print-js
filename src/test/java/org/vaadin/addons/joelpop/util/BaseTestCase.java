@@ -1,10 +1,10 @@
-package org.vaadin.joelpop.util;
+package org.vaadin.addons.joelpop.util;
 
 import com.vaadin.testbench.TestBenchTestCase;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
-import org.vaadin.joelpop.webdriver.WebDriverFactory;
-import org.vaadin.joelpop.webdriver.WebDriverManagerFactory;
+import org.vaadin.addons.joelpop.webdriver.WebDriverFactory;
+import org.vaadin.addons.joelpop.webdriver.WebDriverManagerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

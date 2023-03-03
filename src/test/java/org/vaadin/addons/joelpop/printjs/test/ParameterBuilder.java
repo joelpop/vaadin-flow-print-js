@@ -1,4 +1,4 @@
-package org.vaadin.joelpop.addon.printjs.test;
+package org.vaadin.addons.joelpop.printjs.test;
 
 import java.util.Arrays;
 import java.util.Optional;

@@ -1,18 +1,34 @@
-package org.vaadin.joelpop.addon.printjs.test;
+package org.vaadin.addons.joelpop.printjs.test;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.vaadin.joelpop.addon.printjs.PrintJs;
+import org.vaadin.addons.joelpop.printjs.PrintJs;
 
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
-public class HtmlElementTest {
-    public static final String PRINTABLE = "htmlElementId";
-    public static final String PRINTABLE_TYPE = "html";
-    public static final Supplier<PrintJs> INSTANTIATOR = () -> PrintJs.fromHtmlElement(PRINTABLE);
+public class JsonTest {
+    public static final String PRINTABLE = "[\n" +
+            "    {\n" +
+            "       name: 'John Doe',\n" +
+            "       email: 'john@doe.com',\n" +
+            "       phone: '111-111-1111'\n" +
+            "    },\n" +
+            "    {\n" +
+            "       name: 'Barry Allen',\n" +
+            "       email: 'barry@flash.com',\n" +
+            "       phone: '222-222-2222'\n" +
+            "    },\n" +
+            "    {\n" +
+            "       name: 'Cool Dude',\n" +
+            "       email: 'cool@dude.com',\n" +
+            "       phone: '333-333-3333'\n" +
+            "    }\n" +
+            " ]";
+    public static final String PRINTABLE_TYPE = "json";
+    public static final Supplier<PrintJs> INSTANTIATOR = () -> PrintJs.fromJsonData(PRINTABLE);
 
     private PrintJs printJs;
 
@@ -24,9 +40,9 @@ public class HtmlElementTest {
     @Test
     public void checkInstantiation() {
         assertThat(printJs)
-                .as("printable for HTML element and its printable type")
+                .as("printable for JSON and its printable type")
                 .hasToString(ParameterBuilder.create()
-                        .addWithQuotes("printable", PRINTABLE)
+                        .add("printable", PRINTABLE)
                         .addWithQuotes("type", PRINTABLE_TYPE)
                         .getParameterObject());
     }
@@ -36,9 +52,9 @@ public class HtmlElementTest {
         printJs.reset();
 
         assertThat(printJs)
-                .as("printable for HTML element and its printable type")
+                .as("printable for JSON and its printable type")
                 .hasToString(ParameterBuilder.create()
-                        .addWithQuotes("printable", PRINTABLE)
+                        .add("printable", PRINTABLE)
                         .addWithQuotes("type", PRINTABLE_TYPE)
                         .getParameterObject());
     }
@@ -49,22 +65,22 @@ public class HtmlElementTest {
                 .setHeaderText("Header Text")
                 .setHeaderStyle("Modal Message")
                 .setMaxWidth(1000)
-                .setCssUrls("CSS URLs")
-                .setStyle("border:none;")
-                .setScanStyles(false)
-                .setTargetStyles("target-style")
-                .setTargetStylePatterns("target")
+                .setJsonProperties("JSON Properties")
+                .setJsonGridHeaderStyle("JSON Grid Header Style")
+                .setJsonGridStyle("JSON Grid Style")
+                .setJsonRepeatTableHeader(true)
                 .setDocumentTitle("Document Title")
                 .setOnPrintDialogClose("window.alert('print dialog close')")
                 .reset();
 
         assertThat(printJs)
-                .as("printable for HTML element and its printable type")
+                .as("printable for JSON and its printable type")
                 .hasToString(ParameterBuilder.create()
-                        .addWithQuotes("printable", PRINTABLE)
+                        .add("printable", PRINTABLE)
                         .addWithQuotes("type", PRINTABLE_TYPE)
                         .getParameterObject());
     }
+
 
     @Test
     public void checkHeaderText() {
@@ -163,204 +179,140 @@ public class HtmlElementTest {
     }
 
     @Test
-    public void checkCssUrls() {
-        assertThat(printJs.getCssUrls())
-                .as("css default")
+    public void checkJsonProperties() {
+        assertThat(printJs.getJsonProperties())
+                .as("jsonProperties default")
                 .isNull();
         assertThat(printJs.toString())
-                .as("css default parameter")
+                .as("jsonProperties default parameter")
                 .doesNotContain(ParameterBuilder.create()
-                        .add("css", null)
+                        .add("properties", null)
                         .getParameters());
 
-        printJs.setCssUrls("css/style1.css", "css/style2.css");
-        assertThat(printJs.getCssUrls())
-                .as("css set")
-                .containsOnly("css/style1.css", "css/style2.css");
+        printJs.setJsonProperties("name", "address", "phone");
+        assertThat(printJs.getJsonProperties())
+                .as("jsonProperties set")
+                .containsOnly("name", "address", "phone");
         assertThat(printJs.toString())
-                .as("css set parameter")
+                .as("jsonProperties set parameter")
                 .contains(ParameterBuilder.create()
-                        .addArrayWithQuotes("css", "css/style1.css", "css/style2.css")
+                        .addArrayWithQuotes("properties", "name", "address", "phone")
                         .getParameters());
 
-        printJs.setCssUrls();
-        assertThat(printJs.getCssUrls())
-                .as("css reset")
+        printJs.setJsonProperties();
+        assertThat(printJs.getJsonProperties())
+                .as("jsonProperties reset")
                 .isNull();
         assertThat(printJs.toString())
-                .as("css reset parameter")
+                .as("jsonProperties reset parameter")
                 .doesNotContain(ParameterBuilder.create()
-                        .add("css", null)
+                        .add("properties", null)
                         .getParameters());
     }
 
     @Test
-    public void checkStyle() {
-        assertThat(printJs.getStyle())
-                .as("style default")
-                .isNull();
+    public void checkJsonGridHeaderStyle() {
+        assertThat(printJs.getJsonGridHeaderStyle())
+                .as("gridHeaderStyle default")
+                .isEqualTo("font-weight: bold;");
         assertThat(printJs.toString())
-                .as("style default parameter")
+                .as("gridHeaderStyle default parameter")
                 .doesNotContain(ParameterBuilder.create()
-                        .addWithQuotes("style", null)
+                        .addWithQuotes("gridHeaderStyle", null)
                         .getParameters());
 
-        printJs.setStyle("name: value;");
-        assertThat(printJs.getStyle())
-                .as("style set")
-                .isEqualTo("name: value;");
+        printJs.setJsonGridHeaderStyle("font-size: 16pt;");
+        assertThat(printJs.getJsonGridHeaderStyle())
+                .as("gridHeaderStyle set")
+                .isEqualTo("font-size: 16pt;");
         assertThat(printJs.toString())
-                .as("style set parameter")
+                .as("gridHeaderStyle set parameter")
                 .contains(ParameterBuilder.create()
-                        .addWithQuotes("style", "name: value;")
+                        .addWithQuotes("gridHeaderStyle", "font-size: 16pt;")
                         .getParameters());
 
-        printJs.setStyle(null);
-        assertThat(printJs.getStyle())
-                .as("style reset")
-                .isNull();
+        printJs.setJsonGridHeaderStyle(null);
+        assertThat(printJs.getJsonGridHeaderStyle())
+                .as("gridHeaderStyle reset")
+                .isEqualTo("font-weight: bold;");
         assertThat(printJs.toString())
-                .as("style reset parameter")
+                .as("gridHeaderStyle reset parameter")
                 .doesNotContain(ParameterBuilder.create()
-                        .addWithQuotes("style", null)
+                        .addWithQuotes("gridHeaderStyle", null)
                         .getParameters());
     }
 
     @Test
-    public void checkScanStyles() {
-        assertThat(printJs.isScanStyles())
-                .as("scanStyles default")
-                .isTrue();
+    public void checkJsonGridStyle() {
+        assertThat(printJs.getJsonGridStyle())
+                .as("gridStyle default")
+                .isEqualTo("border: 1px solid lightgray; margin-bottom: -1px;");
         assertThat(printJs.toString())
-                .as("scanStyles default parameter")
+                .as("gridStyle default parameter")
                 .doesNotContain(ParameterBuilder.create()
-                        .add("scanStyles", null)
+                        .addWithQuotes("gridStyle", null)
                         .getParameters());
 
-        printJs.setScanStyles(true);
-        assertThat(printJs.isScanStyles())
-                .as("scanStyles set")
+        printJs.setJsonGridStyle("background-color: black; color: white;");
+        assertThat(printJs.getJsonGridStyle())
+                .as("gridStyle set")
+                .isEqualTo("background-color: black; color: white;");
+        assertThat(printJs.toString())
+                .as("gridStyle set parameter")
+                .contains(ParameterBuilder.create()
+                        .addWithQuotes("gridStyle", "background-color: black; color: white;")
+                        .getParameters());
+
+        printJs.setJsonGridStyle(null);
+        assertThat(printJs.getJsonGridStyle())
+                .as("gridStyle reset")
+                .isEqualTo("border: 1px solid lightgray; margin-bottom: -1px;");
+        assertThat(printJs.toString())
+                .as("gridStyle reset parameter")
+                .doesNotContain(ParameterBuilder.create()
+                        .addWithQuotes("gridStyle", null)
+                        .getParameters());
+    }
+
+    @Test
+    public void checkJsonRepeatTableHeader() {
+        assertThat(printJs.isJsonRepeatTableHeader())
+                .as("repeatTableHeader default")
                 .isTrue();
         assertThat(printJs.toString())
-                .as("scanStyles set parameter")
-                .contains(ParameterBuilder.create()
-                        .add("scanStyles", "true")
+                .as("repeatTableHeader default parameter")
+                .doesNotContain(ParameterBuilder.create()
+                        .add("repeatTableHeader", null)
                         .getParameters());
 
-        printJs.setScanStyles(false);
-        assertThat(printJs.isScanStyles())
-                .as("scanStyles set")
+        printJs.setJsonRepeatTableHeader(true);
+        assertThat(printJs.isJsonRepeatTableHeader())
+                .as("repeatTableHeader set")
+                .isTrue();
+        assertThat(printJs.toString())
+                .as("repeatTableHeader set parameter")
+                .contains(ParameterBuilder.create()
+                        .add("repeatTableHeader", "true")
+                        .getParameters());
+
+        printJs.setJsonRepeatTableHeader(false);
+        assertThat(printJs.isJsonRepeatTableHeader())
+                .as("repeatTableHeader set")
                 .isFalse();
         assertThat(printJs.toString())
-                .as("scanStyles set parameter")
+                .as("repeatTableHeader set parameter")
                 .contains(ParameterBuilder.create()
-                        .add("scanStyles", "false")
+                        .add("repeatTableHeader", "false")
                         .getParameters());
 
-        printJs.resetScanStyles();
-        assertThat(printJs.isScanStyles())
-                .as("scanStyles reset")
+        printJs.resetJsonRepeatTableHeader();
+        assertThat(printJs.isJsonRepeatTableHeader())
+                .as("repeatTableHeader reset")
                 .isTrue();
         assertThat(printJs.toString())
-                .as("scanStyles reset parameter")
+                .as("repeatTableHeader reset parameter")
                 .doesNotContain(ParameterBuilder.create()
-                        .add("scanStyles", null)
-                        .getParameters());
-    }
-
-    @Test
-    public void checkTargetStyles() {
-        assertThat(printJs.getTargetStyles())
-                .as("targetStyles default")
-                .isNull();
-        assertThat(printJs.toString())
-                .as("targetStyles default parameter")
-                .doesNotContain(ParameterBuilder.create()
-                        .add("targetStyle", null)
-                        .getParameters());
-
-        printJs.setTargetStyles("padding-top", "border-bottom");
-        assertThat(printJs.getTargetStyles())
-                .as("targetStyles set")
-                .containsOnly("padding-top", "border-bottom");
-        assertThat(printJs.toString())
-                .as("targetStyles set parameter")
-                .contains(ParameterBuilder.create()
-                        .addArrayWithQuotes("targetStyle", "padding-top", "border-bottom")
-                        .getParameters());
-
-        printJs.setTargetStyles();
-        assertThat(printJs.getTargetStyles())
-                .as("targetStyles reset")
-                .isNull();
-        assertThat(printJs.toString())
-                .as("targetStyles reset parameter")
-                .doesNotContain(ParameterBuilder.create()
-                        .add("targetStyle", null)
-                        .getParameters());
-    }
-
-    @Test
-    public void checkTargetStylePatterns() {
-        assertThat(printJs.getTargetStylePatterns())
-                .as("targetStylePatterns default")
-                .isNull();
-        assertThat(printJs.toString())
-                .as("targetStylePatterns default parameter")
-                .doesNotContain(ParameterBuilder.create()
-                        .add("targetStyles", null)
-                        .getParameters());
-
-        printJs.setTargetStylePatterns("border", "padding");
-        assertThat(printJs.getTargetStylePatterns())
-                .as("targetStylePatterns set")
-                .containsOnly("border", "padding");
-        assertThat(printJs.toString())
-                .as("targetStylePatterns set parameter")
-                .contains(ParameterBuilder.create()
-                        .addArrayWithQuotes("targetStyles", "border", "padding")
-                        .getParameters());
-
-        printJs.setTargetStylePatterns();
-        assertThat(printJs.getTargetStylePatterns())
-                .as("targetStylePatterns reset")
-                .isNull();
-        assertThat(printJs.toString())
-                .as("targetStylePatterns reset parameter")
-                .doesNotContain(ParameterBuilder.create()
-                        .add("targetStyles", null)
-                        .getParameters());
-    }
-
-    @Test
-    public void checkIgnoreElements() {
-        assertThat(printJs.getIgnoreElements())
-                .as("ignoreElements default")
-                .isEmpty();
-        assertThat(printJs.toString())
-                .as("ignoreElements default parameter")
-                .doesNotContain(ParameterBuilder.create()
-                        .add("ignoreElements", null)
-                        .getParameters());
-
-        printJs.setIgnoreElements("ignoreElement1", "ignoreElement2");
-        assertThat(printJs.getIgnoreElements())
-                .as("ignoreElements set")
-                .containsOnly("ignoreElement1", "ignoreElement2");
-        assertThat(printJs.toString())
-                .as("ignoreElements set parameter")
-                .contains(ParameterBuilder.create()
-                        .addArrayWithQuotes("ignoreElements", "ignoreElement1", "ignoreElement2")
-                        .getParameters());
-
-        printJs.setIgnoreElements();
-        assertThat(printJs.getIgnoreElements())
-                .as("ignoreElements reset")
-                .isEmpty();
-        assertThat(printJs.toString())
-                .as("ignoreElements reset parameter")
-                .doesNotContain(ParameterBuilder.create()
-                        .add("ignoreElements", null)
+                        .add("repeatTableHeader", null)
                         .getParameters());
     }
 
@@ -428,42 +380,51 @@ public class HtmlElementTest {
                         .getParameters());
     }
 
+
     @Test
     public void checkIllegalArguments() {
         assertThatIllegalArgumentException()
-                .as("properties is not a valid parameter for HTML")
-                .isThrownBy(() -> printJs.getJsonProperties());
+                .as("css is not a valid parameter for JSON")
+                .isThrownBy(() -> printJs.getCssUrls());
 
         assertThatIllegalArgumentException()
-                .as("gridHeaderStyle is not a valid parameter for HTML")
-                .isThrownBy(() -> printJs.getJsonGridHeaderStyle());
+                .as("style is not a valid parameter for JSON")
+                .isThrownBy(() -> printJs.getStyle());
 
         assertThatIllegalArgumentException()
-                .as("gridStyle is not a valid parameter for HTML")
-                .isThrownBy(() -> printJs.getJsonGridStyle());
+                .as("scanStyles is not a valid parameter for JSON")
+                .isThrownBy(() -> printJs.isScanStyles());
 
         assertThatIllegalArgumentException()
-                .as("repeatTableHeader is not a valid parameter for HTML")
-                .isThrownBy(() -> printJs.isJsonRepeatTableHeader());
+                .as("targetStyle is not a valid parameter for JSON")
+                .isThrownBy(() -> printJs.getTargetStyles());
 
         assertThatIllegalArgumentException()
-                .as("showModal is not a valid parameter for HTML")
+                .as("targetStyles is not a valid parameter for JSON")
+                .isThrownBy(() -> printJs.getTargetStylePatterns());
+
+        assertThatIllegalArgumentException()
+                .as("ignoreElements is not a valid parameter for JSON")
+                .isThrownBy(() -> printJs.getIgnoreElements());
+
+        assertThatIllegalArgumentException()
+                .as("showModal is not a valid parameter for JSON")
                 .isThrownBy(() -> printJs.isShowModal());
 
         assertThatIllegalArgumentException()
-                .as("modalMessage is not a valid parameter for HTML")
+                .as("modalMessage is not a valid parameter for JSON")
                 .isThrownBy(() -> printJs.getModalMessage());
 
         assertThatIllegalArgumentException()
-                .as("onLoadingStart is not a valid parameter for HTML")
+                .as("onLoadingStart is not a valid parameter for JSON")
                 .isThrownBy(() -> printJs.getOnLoadingStart());
 
         assertThatIllegalArgumentException()
-                .as("onLoadingEnd is not a valid parameter for HTML")
+                .as("onLoadingEnd is not a valid parameter for JSON")
                 .isThrownBy(() -> printJs.getOnLoadingEnd());
 
         assertThatIllegalArgumentException()
-                .as("fallbackPrintable is not a valid parameter for HTML")
+                .as("fallbackPrintable is not a valid parameter for JSON")
                 .isThrownBy(() -> printJs.getFallbackPrintable());
 
         assertThatIllegalArgumentException()
